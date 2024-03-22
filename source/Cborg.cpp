@@ -75,14 +75,14 @@ bool Cborg::getCBOR(const uint8_t** pointer, uint32_t* length) {
     // stop when maximum length is reached or
     // the current container is finished
     while (progress < maxLength) {
-      // if we end up with more units than we have bytes for, then something is
-      // very wrong.
-      if (units > maxLength - progress) {
-        return false;
-      }
-
       // decrement unit count unless set to indefinite
       if (units != maxOf(units)) {
+        // if we end up with more units than we have bytes for, then something
+        // is very wrong.
+        if (units > maxLength - progress) {
+          return false;
+        }
+
         units--;
       }
 
@@ -195,6 +195,12 @@ uint32_t Cborg::getCBORLength() {
     while (progress < maxLength) {
       // decrement unit count unless set to indefinite
       if (units != maxOf(units)) {
+        // if we end up with more units than we have bytes for, then something
+        // is very wrong.
+        if (units > maxLength - progress) {
+          return 0;
+        }
+
         units--;
       }
 
@@ -297,6 +303,12 @@ Cborg Cborg::find(int32_t key) const {
   while (progress < maxLength) {
     // decrement unit count unless set to indefinite
     if (units != maxOf(units)) {
+      // if we end up with more units than we have bytes for, then something is
+      // very wrong.
+      if (units > maxLength - progress) {
+        return Cborg(NULL, 0);
+      }
+
       units--;
     }
 
@@ -435,6 +447,12 @@ Cborg Cborg::find(const char* key, std::size_t keyLength) const {
   while (progress < maxLength) {
     // decrement unit count unless set to indefinite
     if (units != maxOf(units)) {
+      // if we end up with more units than we have bytes for, then something is
+      // very wrong.
+      if (units > maxLength - progress) {
+        return Cborg(NULL, 0);
+      }
+
       units--;
     }
 
@@ -589,6 +607,12 @@ Cborg Cborg::getKey(std::size_t index) const {
     } else {
       // decrement unit count unless set to indefinite
       if (units != maxOf(units)) {
+        // if we end up with more units than we have bytes for, then something
+        // is very wrong.
+        if (units > maxLength - progress) {
+          return Cborg(NULL, 0);
+        }
+
         units--;
       }
 
@@ -698,6 +722,12 @@ Cborg Cborg::at(std::size_t index) const {
     } else {
       // decrement unit count unless set to indefinite
       if (units != maxOf(units)) {
+        // if we end up with more units than we have bytes for, then something
+        // is very wrong.
+        if (units > maxLength - progress) {
+          return Cborg(NULL, 0);
+        }
+
         units--;
       }
 
@@ -897,6 +927,12 @@ void Cborg::print() const {
   while (progress < maxLength) {
     // decrement unit count unless set to indefinite
     if (units != maxOf(units)) {
+      // if we end up with more units than we have bytes for, then something is
+      // very wrong.
+      if (units > maxLength - progress) {
+        return;
+      }
+
       units--;
     }
 
