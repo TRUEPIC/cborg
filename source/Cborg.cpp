@@ -75,6 +75,12 @@ bool Cborg::getCBOR(const uint8_t** pointer, uint32_t* length) {
     // stop when maximum length is reached or
     // the current container is finished
     while (progress < maxLength) {
+      // if we end up with more units than we have bytes for, then something is
+      // very wrong.
+      if (units > maxLength - progress) {
+        return false;
+      }
+
       // decrement unit count unless set to indefinite
       if (units != maxOf(units)) {
         units--;
