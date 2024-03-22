@@ -102,6 +102,10 @@ bool Cborg::getCBOR(const uint8_t** pointer, uint32_t* length) {
         } else if (head.getValue() > 0) {
           list.push_back(units);
           units = 2 * head.getValue();
+        } else if (units == maxOf(units)) {
+          // We're not making progress. We'll just process the current unit
+          // endlessly. Something is wrong. We need to bail.
+          return false;
         }
       } else if (type == CborBase::TypeArray) {
         if (simple == CborBase::TypeIndefinite) {
@@ -110,6 +114,10 @@ bool Cborg::getCBOR(const uint8_t** pointer, uint32_t* length) {
         } else if (head.getValue() > 0) {
           list.push_back(units);
           units = head.getValue();
+        } else if (units == maxOf(units)) {
+          // We're not making progress. We'll just process the current unit
+          // endlessly. Something is wrong. We need to bail.
+          return false;
         }
       } else if (((type == CborBase::TypeBytes) ||
                   (type == CborBase::TypeString)) &&
@@ -220,6 +228,10 @@ uint32_t Cborg::getCBORLength() {
         } else if (head.getValue() > 0) {
           list.push_back(units);
           units = 2 * head.getValue();
+        } else if (units == maxOf(units)) {
+          // We're not making progress. We'll just process the current unit
+          // endlessly. Something is wrong. We need to bail.
+          return false;
         }
       } else if (type == CborBase::TypeArray) {
         if (simple == CborBase::TypeIndefinite) {
@@ -228,6 +240,10 @@ uint32_t Cborg::getCBORLength() {
         } else if (head.getValue() > 0) {
           list.push_back(units);
           units = head.getValue();
+        } else if (units == maxOf(units)) {
+          // We're not making progress. We'll just process the current unit
+          // endlessly. Something is wrong. We need to bail.
+          return false;
         }
       } else if (((type == CborBase::TypeBytes) ||
                   (type == CborBase::TypeString)) &&
@@ -330,6 +346,10 @@ Cborg Cborg::find(int32_t key) const {
       } else if (head.getValue() > 0) {
         list.push_back(units);
         units = 2 * head.getValue();
+      } else if (units == maxOf(units)) {
+        // We're not making progress. We'll just process the current unit
+        // endlessly. Something is wrong. We need to bail.
+        return Cborg(NULL, 0);
       }
     } else if (type == CborBase::TypeArray) {
       gotKey = false;
@@ -340,6 +360,10 @@ Cborg Cborg::find(int32_t key) const {
       } else if (head.getValue() > 0) {
         list.push_back(units);
         units = head.getValue();
+      } else if (units == maxOf(units)) {
+        // We're not making progress. We'll just process the current unit
+        // endlessly. Something is wrong. We need to bail.
+        return Cborg(NULL, 0);
       }
     } else if (((type == CborBase::TypeBytes) ||
                 (type == CborBase::TypeString)) &&
@@ -474,6 +498,10 @@ Cborg Cborg::find(const char* key, std::size_t keyLength) const {
       } else if (head.getValue() > 0) {
         list.push_back(units);
         units = 2 * head.getValue();
+      } else if (units == maxOf(units)) {
+        // We're not making progress. We'll just process the current unit
+        // endlessly. Something is wrong. We need to bail.
+        return Cborg(NULL, 0);
       }
     } else if (type == CborBase::TypeArray) {
       gotKey = false;
@@ -484,6 +512,10 @@ Cborg Cborg::find(const char* key, std::size_t keyLength) const {
       } else if (head.getValue() > 0) {
         list.push_back(units);
         units = head.getValue();
+      } else if (units == maxOf(units)) {
+        // We're not making progress. We'll just process the current unit
+        // endlessly. Something is wrong. We need to bail.
+        return Cborg(NULL, 0);
       }
     } else if (((type == CborBase::TypeBytes) ||
                 (type == CborBase::TypeString)) &&
@@ -632,6 +664,10 @@ Cborg Cborg::getKey(std::size_t index) const {
         } else if (head.getValue() > 0) {
           list.push_back(units);
           units = 2 * head.getValue();
+        } else if (units == maxOf(units)) {
+          // We're not making progress. We'll just process the current unit
+          // endlessly. Something is wrong. We need to bail.
+          return Cborg(NULL, 0);
         }
       } else if (type == CborBase::TypeArray) {
         if (simple == CborBase::TypeIndefinite) {
@@ -640,6 +676,10 @@ Cborg Cborg::getKey(std::size_t index) const {
         } else if (head.getValue() > 0) {
           list.push_back(units);
           units = head.getValue();
+        } else if (units == maxOf(units)) {
+          // We're not making progress. We'll just process the current unit
+          // endlessly. Something is wrong. We need to bail.
+          return Cborg(NULL, 0);
         }
       } else if (((type == CborBase::TypeBytes) ||
                   (type == CborBase::TypeString)) &&
@@ -747,6 +787,10 @@ Cborg Cborg::at(std::size_t index) const {
         } else if (head.getValue() > 0) {
           list.push_back(units);
           units = 2 * head.getValue();
+        } else if (units == maxOf(units)) {
+          // We're not making progress. We'll just process the current unit
+          // endlessly. Something is wrong. We need to bail.
+          return Cborg(NULL, 0);
         }
       } else if (type == CborBase::TypeArray) {
         if (simple == CborBase::TypeIndefinite) {
@@ -755,6 +799,10 @@ Cborg Cborg::at(std::size_t index) const {
         } else if (head.getValue() > 0) {
           list.push_back(units);
           units = head.getValue();
+        } else if (units == maxOf(units)) {
+          // We're not making progress. We'll just process the current unit
+          // endlessly. Something is wrong. We need to bail.
+          return Cborg(NULL, 0);
         }
       } else if (((type == CborBase::TypeBytes) ||
                   (type == CborBase::TypeString)) &&
@@ -966,6 +1014,10 @@ void Cborg::print() const {
 
         list.push_back(units);
         units = 2 * head.getValue();
+      } else if (units == maxOf(units)) {
+        // We're not making progress. We'll just process the current unit
+        // endlessly. Something is wrong. We need to bail.
+        return;
       }
     } else if (type == CborBase::TypeArray) {
       if (simple == CborBase::TypeIndefinite) {
@@ -978,6 +1030,10 @@ void Cborg::print() const {
 
         list.push_back(units);
         units = head.getValue();
+      } else if (units == maxOf(units)) {
+        // We're not making progress. We'll just process the current unit
+        // endlessly. Something is wrong. We need to bail.
+        return;
       }
     } else if ((type == CborBase::TypeBytes) &&
                (simple == CborBase::TypeIndefinite)) {
