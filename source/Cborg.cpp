@@ -130,6 +130,10 @@ bool Cborg::getCBOR(const uint8_t** pointer, uint32_t* length) {
       if (((type == CborBase::TypeBytes) || (type == CborBase::TypeString)) &&
           (simple != CborBase::TypeIndefinite)) {
         progress += head.getLength() + head.getValue();
+      } else if (units == maxOf(units) && head.getLength() == 0) {
+        // We're not making progress. We'll just process the current unit
+        // endlessly. Something is wrong. We need to bail.
+        return false;
       } else {
         progress += head.getLength();
       }
@@ -256,6 +260,10 @@ uint32_t Cborg::getCBORLength() {
       if (((type == CborBase::TypeBytes) || (type == CborBase::TypeString)) &&
           (simple != CborBase::TypeIndefinite)) {
         progress += head.getLength() + head.getValue();
+      } else if (units == maxOf(units) && head.getLength() == 0) {
+        // We're not making progress. We'll just process the current unit
+        // endlessly. Something is wrong. We need to bail.
+        return false;
       } else {
         progress += head.getLength();
       }
@@ -413,6 +421,10 @@ Cborg Cborg::find(int32_t key) const {
     if (((type == CborBase::TypeBytes) || (type == CborBase::TypeString)) &&
         (simple != CborBase::TypeIndefinite)) {
       progress += head.getLength() + head.getValue();
+    } else if (units == maxOf(units) && head.getLength() == 0) {
+      // We're not making progress. We'll just process the current unit
+      // endlessly. Something is wrong. We need to bail.
+      return Cborg(NULL, 0);
     } else {
       progress += head.getLength();
     }
@@ -575,6 +587,10 @@ Cborg Cborg::find(const char* key, std::size_t keyLength) const {
     if (((type == CborBase::TypeBytes) || (type == CborBase::TypeString)) &&
         (simple != CborBase::TypeIndefinite)) {
       progress += head.getLength() + head.getValue();
+    } else if (units == maxOf(units) && head.getLength() == 0) {
+      // We're not making progress. We'll just process the current unit
+      // endlessly. Something is wrong. We need to bail.
+      return Cborg(NULL, 0);
     } else {
       progress += head.getLength();
     }
@@ -692,6 +708,10 @@ Cborg Cborg::getKey(std::size_t index) const {
       if (((type == CborBase::TypeBytes) || (type == CborBase::TypeString)) &&
           (simple != CborBase::TypeIndefinite)) {
         progress += head.getLength() + head.getValue();
+      } else if (units == maxOf(units) && head.getLength() == 0) {
+        // We're not making progress. We'll just process the current unit
+        // endlessly. Something is wrong. We need to bail.
+        return Cborg(NULL, 0);
       } else {
         progress += head.getLength();
       }
@@ -815,6 +835,10 @@ Cborg Cborg::at(std::size_t index) const {
       if (((type == CborBase::TypeBytes) || (type == CborBase::TypeString)) &&
           (simple != CborBase::TypeIndefinite)) {
         progress += head.getLength() + head.getValue();
+      } else if (units == maxOf(units) && head.getLength() == 0) {
+        // We're not making progress. We'll just process the current unit
+        // endlessly. Something is wrong. We need to bail.
+        return Cborg(NULL, 0);
       } else {
         progress += head.getLength();
       }
@@ -1132,6 +1156,10 @@ void Cborg::print() const {
     if (((type == CborBase::TypeBytes) || (type == CborBase::TypeString)) &&
         (simple != CborBase::TypeIndefinite)) {
       progress += head.getLength() + head.getValue();
+    } else if (units == maxOf(units) && head.getLength() == 0) {
+      // We're not making progress. We'll just process the current unit
+      // endlessly. Something is wrong. We need to bail.
+      return;
     } else {
       progress += head.getLength();
     }
