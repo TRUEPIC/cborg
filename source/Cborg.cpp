@@ -49,7 +49,7 @@ bool Cborg::getCBOR(const uint8_t** pointer, uint32_t* length)
 {
     // decode current header
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     uint8_t type = head.getMajorType();
     uint8_t simple = head.getMinorType();
@@ -99,7 +99,7 @@ bool Cborg::getCBOR(const uint8_t** pointer, uint32_t* length)
             }
 
             // decode header for cbor object currently pointed to
-            head.decode(&cbor[progress]);
+            head.decode(&cbor[progress], maxLength - progress);
 
             type = head.getMajorType();
             simple = head.getMinorType();
@@ -207,7 +207,7 @@ uint32_t Cborg::getCBORLength()
 {
     // decode current header
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     uint8_t type = head.getMajorType();
     uint8_t simple = head.getMinorType();
@@ -255,7 +255,7 @@ uint32_t Cborg::getCBORLength()
             }
 
             // decode header for cbor object currently pointed to
-            head.decode(&cbor[progress]);
+            head.decode(&cbor[progress], maxLength - progress);
 
             type = head.getMajorType();
             simple = head.getMinorType();
@@ -358,7 +358,7 @@ uint32_t Cborg::getCBORLength()
 Cborg Cborg::find(int32_t key) const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     uint8_t type = head.getMajorType();
     uint8_t simple = head.getMinorType();
@@ -397,7 +397,7 @@ Cborg Cborg::find(int32_t key) const
         }
 
         // decode header for cbor object currently pointed to
-        head.decode(&cbor[progress]);
+        head.decode(&cbor[progress], maxLength - progress);
 
         type = head.getMajorType();
         simple = head.getMinorType();
@@ -544,7 +544,7 @@ Cborg Cborg::find(int32_t key) const
 Cborg Cborg::find(const char* key, std::size_t keyLength) const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     uint8_t type = head.getMajorType();
     uint8_t simple = head.getMinorType();
@@ -583,7 +583,7 @@ Cborg Cborg::find(const char* key, std::size_t keyLength) const
         }
 
         // decode header for cbor object currently pointed to
-        head.decode(&cbor[progress]);
+        head.decode(&cbor[progress], maxLength - progress);
 
         type = head.getMajorType();
         simple = head.getMinorType();
@@ -738,7 +738,7 @@ Cborg Cborg::find(const char* key, std::size_t keyLength) const
 Cborg Cborg::getKey(std::size_t index) const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     uint8_t type = head.getMajorType();
     uint8_t simple = head.getMinorType();
@@ -785,7 +785,7 @@ Cborg Cborg::getKey(std::size_t index) const
             }
 
             // decode header for cbor object currently pointed to
-            head.decode(&cbor[progress]);
+            head.decode(&cbor[progress], maxLength - progress);
 
             type = head.getMajorType();
             simple = head.getMinorType();
@@ -886,7 +886,7 @@ Cborg Cborg::getKey(std::size_t index) const
 Cborg Cborg::at(std::size_t index) const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     uint8_t type = head.getMajorType();
     uint8_t simple = head.getMinorType();
@@ -933,7 +933,7 @@ Cborg Cborg::at(std::size_t index) const
             }
 
             // decode header for cbor object currently pointed to
-            head.decode(&cbor[progress]);
+            head.decode(&cbor[progress], maxLength - progress);
 
             type = head.getMajorType();
             simple = head.getMinorType();
@@ -1034,7 +1034,7 @@ Cborg Cborg::at(std::size_t index) const
 uint32_t Cborg::getSize() const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     uint8_t type = head.getMajorType();
     uint8_t simple = head.getMinorType();
@@ -1063,7 +1063,7 @@ uint32_t Cborg::getSize() const
 bool Cborg::getUnsigned(uint32_t* integer) const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     if (head.getMajorType() == CborBase::TypeUnsigned)
     {
@@ -1080,7 +1080,7 @@ bool Cborg::getUnsigned(uint32_t* integer) const
 bool Cborg::getNegative(int32_t* integer) const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     if (head.getMajorType() == CborBase::TypeNegative)
     {
@@ -1097,12 +1097,19 @@ bool Cborg::getNegative(int32_t* integer) const
 bool Cborg::getBytes(const uint8_t** pointer, uint32_t* length) const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     if (head.getMajorType() == CborBase::TypeBytes)
     {
-        *pointer = &cbor[head.getLength()];
-        *length = head.getValue();
+        auto offset = head.getLength();
+        auto len = head.getValue();
+        if (offset + len > maxLength)
+        {
+            return false;
+        }
+
+        *pointer = &cbor[offset];
+        *length = len;
 
         return true;
     }
@@ -1115,12 +1122,19 @@ bool Cborg::getBytes(const uint8_t** pointer, uint32_t* length) const
 bool Cborg::getString(const char** pointer, uint32_t* length) const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     if (head.getMajorType() == CborBase::TypeString)
     {
-        *pointer = (const char*) &cbor[head.getLength()];
-        *length = head.getValue();
+        auto offset = head.getLength();
+        auto len = head.getValue();
+        if (offset + len > maxLength)
+        {
+            return false;
+        }
+
+        *pointer = (const char*) &cbor[offset];
+        *length = len;
 
         return true;
     }
@@ -1133,11 +1147,18 @@ bool Cborg::getString(const char** pointer, uint32_t* length) const
 bool Cborg::getString(std::string& str) const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     if (head.getMajorType() == CborBase::TypeString)
     {
-        str.assign((const char*) &cbor[head.getLength()], head.getValue());
+        auto offset = head.getLength();
+        auto length = head.getValue();
+        if (offset + length > maxLength)
+        {
+            return false;
+        }
+
+        str.assign((const char*) &cbor[offset], length);
 
         return true;
     }
@@ -1154,7 +1175,7 @@ bool Cborg::getString(std::string& str) const
 uint32_t Cborg::getTag() const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     return head.getTag();
 }
@@ -1162,7 +1183,7 @@ uint32_t Cborg::getTag() const
 uint8_t Cborg::getType() const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     return head.getMajorType();
 }
@@ -1170,7 +1191,7 @@ uint8_t Cborg::getType() const
 uint8_t Cborg::getMinorType() const
 {
     CborgHeader head;
-    head.decode(cbor);
+    head.decode(cbor, maxLength);
 
     return head.getMinorType();
 }
@@ -1202,7 +1223,7 @@ void Cborg::print() const
             units--;
         }
 
-        head.decode(&cbor[progress]);
+        head.decode(&cbor[progress], maxLength - progress);
 
         /* semantic tag */
         uint32_t tag = head.getTag();

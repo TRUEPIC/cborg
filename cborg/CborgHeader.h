@@ -17,18 +17,18 @@
 #ifndef __CBORG_HEADER_H__
 #define __CBORG_HEADER_H__
 
-#include "cborg/CborBase.h"
-
 #include <stdint.h>
 
+#include "cborg/CborBase.h"
 
+// clang-format off
 
 class CborgHeader
 {
 public:
     CborgHeader() {}
 
-    void decode(const uint8_t* head)
+    void decode(const uint8_t* head, uint maxLength)
     {
         // reset variables
         tag = 0xFF;
@@ -36,6 +36,11 @@ public:
         minorType = CborBase::TypeNull;
         length = 0;
         value = 0;
+
+        if (maxLength < 1)
+        {
+            return;
+        }
 
         // null pointer check
         if (head)
@@ -53,18 +58,33 @@ public:
             }
             else if (minorType == 24)
             {
+                if (maxLength < 2)
+                {
+                    return;
+                }
+
                 value = head[1];
 
                 length = 2;
             }
             else if (minorType == 25) // 2 bytes
             {
+                if (maxLength < 3)
+                {
+                    return;
+                }
+
                 value = ((uint16_t) head[1] << 8) | head[2];
 
                 length = 3;
             }
             else if (minorType == 26) // 4 bytes
             {
+                if (maxLength < 5)
+                {
+                    return;
+                }
+
                 value = ((uint32_t) head[1] << 24)
                       | ((uint32_t) head[2] << 16)
                       | ((uint32_t) head[3] << 8)
@@ -81,6 +101,11 @@ public:
             // the first type was a semantic tag, read the next header
             if (majorType == CborBase::TypeTag)
             {
+                if (maxLength < length + 1)
+                {
+                    return;
+                }
+
                 // store previous value as the tag
                 tag = value;
 
@@ -97,18 +122,33 @@ public:
                 }
                 else if (minorType == 24)
                 {
+                    if (maxLength < length + 2)
+                    {
+                        return;
+                    }
+
                     value = head[length + 1];
 
                     length += 2;
                 }
                 else if (minorType == 25)
                 {
+                    if (maxLength < length + 3)
+                    {
+                        return;
+                    }
+
                     value = ((uint16_t) head[length + 1] << 8) | head[length + 2];
 
                     length += 3;
                 }
                 else if (minorType == 26)
                 {
+                    if (maxLength < length + 5)
+                    {
+                        return;
+                    }
+
                     value = ((uint32_t) head[length + 1] << 24)
                           | ((uint32_t) head[length + 2] << 16)
                           | ((uint32_t) head[length + 3] << 8)
@@ -159,3 +199,5 @@ private:
 };
 
 #endif // __CBOR_HEADER_H__
+
+// clang-format on
