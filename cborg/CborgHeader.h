@@ -28,7 +28,7 @@ class CborgHeader
 public:
     CborgHeader() {}
 
-    void decode(const uint8_t* head, uint maxLength)
+    void decode(const uint8_t* head, uint32_t maxLength)
     {
         // reset variables
         tag = 0xFF;
