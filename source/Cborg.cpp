@@ -777,7 +777,7 @@ Cborg Cborg::getKey(std::size_t index) const
             {
                 // if we end up with more units than we have bytes for, then something
                 // is very wrong.
-                if (units > maxLength - progress) {
+                if (units > int64_t(maxLength) - int64_t(progress)) {
                     return Cborg(NULL, 0);
                 }
 
@@ -925,7 +925,7 @@ Cborg Cborg::at(std::size_t index) const
             {
                 // if we end up with more units than we have bytes for, then something
                 // is very wrong.
-                if (units > maxLength - progress) {
+                if (units > int64_t(maxLength) - int64_t(progress)) {
                     return Cborg(NULL, 0);
                 }
 

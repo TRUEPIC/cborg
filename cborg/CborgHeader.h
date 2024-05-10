@@ -101,7 +101,7 @@ public:
             // the first type was a semantic tag, read the next header
             if (majorType == CborBase::TypeTag)
             {
-                if (maxLength < length + 1)
+                if (maxLength < uint32_t(length) + 1)
                 {
                     return;
                 }
@@ -122,7 +122,7 @@ public:
                 }
                 else if (minorType == 24)
                 {
-                    if (maxLength < length + 2)
+                    if (maxLength < uint32_t(length) + 2)
                     {
                         return;
                     }
@@ -133,7 +133,7 @@ public:
                 }
                 else if (minorType == 25)
                 {
-                    if (maxLength < length + 3)
+                    if (maxLength < uint32_t(length) + 3)
                     {
                         return;
                     }
@@ -144,7 +144,7 @@ public:
                 }
                 else if (minorType == 26)
                 {
-                    if (maxLength < length + 5)
+                    if (maxLength < uint32_t(length) + 5)
                     {
                         return;
                     }
