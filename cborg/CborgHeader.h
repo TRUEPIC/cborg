@@ -32,8 +32,8 @@ public:
     {
         // reset variables
         tag = 0xFF;
-        majorType = CborBase::TypeSpecial;
-        minorType = CborBase::TypeNull;
+        majorType = CborBase::TypeUnassigned;
+        minorType = CborBase::TypeUnknown;
         length = 0;
         value = 0;
 
