@@ -90,8 +90,8 @@ bool Cborg::getCBOR(const uint8_t** pointer, uint32_t* length)
             if (units != maxOf(units))
             {
                 // if we end up with more units than we have bytes for, then something
-                // is very wrong.
-                if (units > maxLength - progress) {
+                // is very wrong. Also, units should never be negative.
+                if (units > maxLength - progress || units <= 0) {
                   return false;
                 }
 
@@ -246,8 +246,8 @@ uint32_t Cborg::getCBORLength()
             if (units != maxOf(units))
             {
                 // if we end up with more units than we have bytes for, then something
-                // is very wrong.
-                if (units > maxLength - progress) {
+                // is very wrong. Also, units should never be negative.
+                if (units > maxLength - progress || units <= 0) {
                   return false;
                 }
 
@@ -388,8 +388,8 @@ Cborg Cborg::find(int32_t key) const
         if (units != maxOf(units))
         {
             // if we end up with more units than we have bytes for, then something
-            // is very wrong.
-            if (units > maxLength - progress) {
+            // is very wrong. Also, units should never be negative.
+            if (units > maxLength - progress || units <= 0) {
                 return Cborg(NULL, 0);
             }
 
@@ -574,8 +574,8 @@ Cborg Cborg::find(const char* key, std::size_t keyLength) const
         if (units != maxOf(units))
         {
             // if we end up with more units than we have bytes for, then something
-            // is very wrong.
-            if (units > maxLength - progress) {
+            // is very wrong. Also, units should never be negative.
+            if (units > maxLength - progress || units <= 0) {
                 return Cborg(NULL, 0);
             }
 
@@ -776,8 +776,8 @@ Cborg Cborg::getKey(std::size_t index) const
             if (units != maxOf(units))
             {
                 // if we end up with more units than we have bytes for, then something
-                // is very wrong.
-                if (units > int64_t(maxLength) - int64_t(progress)) {
+                // is very wrong. Also, units should never be negative.
+                if (units > int64_t(maxLength) - int64_t(progress) || units <= 0) {
                     return Cborg(NULL, 0);
                 }
 
@@ -924,8 +924,8 @@ Cborg Cborg::at(std::size_t index) const
             if (units != maxOf(units))
             {
                 // if we end up with more units than we have bytes for, then something
-                // is very wrong.
-                if (units > int64_t(maxLength) - int64_t(progress)) {
+                // is very wrong. Also, units should never be negative.
+                if (units > int64_t(maxLength) - int64_t(progress) || units <= 0) {
                     return Cborg(NULL, 0);
                 }
 
@@ -1115,6 +1115,8 @@ bool Cborg::getBytes(const uint8_t** pointer, uint32_t* length) const
     }
     else
     {
+        *pointer = nullptr;
+        *length = 0;
         return false;
     }
 }
@@ -1140,6 +1142,8 @@ bool Cborg::getString(const char** pointer, uint32_t* length) const
     }
     else
     {
+        *pointer = nullptr;
+        *length = 0;
         return false;
     }
 }
@@ -1215,8 +1219,8 @@ void Cborg::print() const
         if (units != maxOf(units))
         {
             // if we end up with more units than we have bytes for, then something
-            // is very wrong.
-            if (units > maxLength - progress) {
+            // is very wrong. Also, units should never be negative.
+            if (units > maxLength - progress || units <= 0) {
                 return;
             }
 
