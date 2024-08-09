@@ -81,6 +81,12 @@ bool Cborg::getCBOR(const uint8_t** pointer, uint32_t* length)
             units = maxOf(units);
         }
 
+        // Handle a zero-length map or array
+        if (units == 0) {
+            *length = progress;
+            return true;
+        }
+
         // iterate through cbor encoded buffer
         // stop when maximum length is reached or
         // the current container is finished
@@ -235,6 +241,11 @@ uint32_t Cborg::getCBORLength()
         else if (simple == CborBase::TypeIndefinite)
         {
             units = maxOf(units);
+        }
+
+        // Handle a zero-length map or array
+        if (units == 0) {
+            return progress;
         }
 
         // iterate through cbor encoded buffer
@@ -895,7 +906,7 @@ Cborg Cborg::at(std::size_t index) const
     int32_t units = head.getValue();
     units = (simple == CborBase::TypeIndefinite) ? maxOf(units) : units;
 
-    // only continue if container is Cbor Map, not empty, and index is within bounds
+    // only continue if container is Cbor Array, not empty, and index is within bounds
     if ((type != CborBase::TypeArray) || (units == 0) || ((int32_t) index >= units))
     {
         return Cborg(NULL, 0);
