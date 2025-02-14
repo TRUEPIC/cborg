@@ -123,7 +123,7 @@ bool Cborg::getCBOR(const uint8_t** pointer, uint32_t* length)
                 {
                     list.push_back(units);
                     units = 2 * head.getValue();
-                } else if (units == maxOf(units)) {
+                } else if (units == maxOf(units) && head.getLength() == 0) {
                     // We're not making progress. We'll just process the current unit
                     // endlessly. Something is wrong. We need to bail.
                     return false;
@@ -140,7 +140,7 @@ bool Cborg::getCBOR(const uint8_t** pointer, uint32_t* length)
                 {
                     list.push_back(units);
                     units = head.getValue();
-                } else if (units == maxOf(units)) {
+                } else if (units == maxOf(units) && head.getLength() == 0) {
                     // We're not making progress. We'll just process the current unit
                     // endlessly. Something is wrong. We need to bail.
                     return false;
@@ -284,7 +284,7 @@ uint32_t Cborg::getCBORLength()
                 {
                     list.push_back(units);
                     units = 2 * head.getValue();
-                } else if (units == maxOf(units)) {
+                } else if (units == maxOf(units) && head.getLength() == 0) {
                     // We're not making progress. We'll just process the current unit
                     // endlessly. Something is wrong. We need to bail.
                     return false;
@@ -301,7 +301,7 @@ uint32_t Cborg::getCBORLength()
                 {
                     list.push_back(units);
                     units = head.getValue();
-                } else if (units == maxOf(units)) {
+                } else if (units == maxOf(units) && head.getLength() == 0) {
                     // We're not making progress. We'll just process the current unit
                     // endlessly. Something is wrong. We need to bail.
                     return false;
@@ -428,7 +428,7 @@ Cborg Cborg::find(int32_t key) const
             {
                 list.push_back(units);
                 units = 2 * head.getValue();
-            } else if (units == maxOf(units)) {
+            } else if (units == maxOf(units) && head.getLength() == 0) {
                 // We're not making progress. We'll just process the current unit
                 // endlessly. Something is wrong. We need to bail.
                 return Cborg(NULL, 0);
@@ -447,7 +447,7 @@ Cborg Cborg::find(int32_t key) const
             {
                 list.push_back(units);
                 units = head.getValue();
-            } else if (units == maxOf(units)) {
+            } else if (units == maxOf(units) && head.getLength() == 0) {
                 // We're not making progress. We'll just process the current unit
                 // endlessly. Something is wrong. We need to bail.
                 return Cborg(NULL, 0);
@@ -614,7 +614,7 @@ Cborg Cborg::find(const char* key, std::size_t keyLength) const
             {
                 list.push_back(units);
                 units = 2 * head.getValue();
-            } else if (units == maxOf(units)) {
+            } else if (units == maxOf(units) && head.getLength() == 0) {
                 // We're not making progress. We'll just process the current unit
                 // endlessly. Something is wrong. We need to bail.
                 return Cborg(NULL, 0);
@@ -633,7 +633,7 @@ Cborg Cborg::find(const char* key, std::size_t keyLength) const
             {
                 list.push_back(units);
                 units = head.getValue();
-            } else if (units == maxOf(units)) {
+            } else if (units == maxOf(units) && head.getLength() == 0) {
                 // We're not making progress. We'll just process the current unit
                 // endlessly. Something is wrong. We need to bail.
                 return Cborg(NULL, 0);
@@ -814,7 +814,7 @@ Cborg Cborg::getKey(std::size_t index) const
                 {
                     list.push_back(units);
                     units = 2 * head.getValue();
-                } else if (units == maxOf(units)) {
+                } else if (units == maxOf(units) && head.getLength() == 0) {
                     // We're not making progress. We'll just process the current unit
                     // endlessly. Something is wrong. We need to bail.
                     return Cborg(NULL, 0);
@@ -831,7 +831,7 @@ Cborg Cborg::getKey(std::size_t index) const
                 {
                     list.push_back(units);
                     units = head.getValue();
-                } else if (units == maxOf(units)) {
+                } else if (units == maxOf(units) && head.getLength() == 0) {
                     // We're not making progress. We'll just process the current unit
                     // endlessly. Something is wrong. We need to bail.
                     return Cborg(NULL, 0);
@@ -962,7 +962,7 @@ Cborg Cborg::at(std::size_t index) const
                 {
                     list.push_back(units);
                     units = 2 * head.getValue();
-                } else if (units == maxOf(units)) {
+                } else if (units == maxOf(units) && head.getLength() == 0) {
                     // We're not making progress. We'll just process the current unit
                     // endlessly. Something is wrong. We need to bail.
                     return Cborg(NULL, 0);
@@ -979,7 +979,7 @@ Cborg Cborg::at(std::size_t index) const
                 {
                     list.push_back(units);
                     units = head.getValue();
-                } else if (units == maxOf(units)) {
+                } else if (units == maxOf(units) && head.getLength() == 0) {
                     // We're not making progress. We'll just process the current unit
                     // endlessly. Something is wrong. We need to bail.
                     return Cborg(NULL, 0);
@@ -1274,7 +1274,7 @@ void Cborg::print() const
 
                 list.push_back(units);
                 units = 2 * head.getValue();
-            } else if (units == maxOf(units)) {
+            } else if (units == maxOf(units) && head.getLength() == 0) {
                 // We're not making progress. We'll just process the current unit
                 // endlessly. Something is wrong. We need to bail.
                 return;
@@ -1295,7 +1295,7 @@ void Cborg::print() const
 
                 list.push_back(units);
                 units = head.getValue();
-            } else if (units == maxOf(units)) {
+            } else if (units == maxOf(units) && head.getLength() == 0) {
                 // We're not making progress. We'll just process the current unit
                 // endlessly. Something is wrong. We need to bail.
                 return;

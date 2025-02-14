@@ -92,6 +92,24 @@ public:
 
                 length = 5;
             }
+            else if (minorType == 27) // 8 bytes
+            {
+                if (maxLength < 9)
+                {
+                    return;
+                }
+
+                value = ((uint64_t) head[1] << 56)
+                      | ((uint64_t) head[2] << 48)
+                      | ((uint64_t) head[3] << 40)
+                      | ((uint64_t) head[4] << 32)
+                      | ((uint64_t) head[5] << 24)
+                      | ((uint64_t) head[6] << 16)
+                      | ((uint64_t) head[7] << 8)
+                      |             head[8];
+
+                length = 9;
+            }
             else if (minorType == CborBase::TypeIndefinite)
             {
                 value = 31;
@@ -154,6 +172,23 @@ public:
                           | ((uint32_t) head[length + 3] << 8)
                           |             head[length + 4];
                     length += 5;
+                }
+                else if (minorType == 27)
+                {
+                    if (maxLength < uint32_t(length) + 9)
+                    {
+                        return;
+                    }
+
+                    value = ((uint64_t) head[length + 1] << 56)
+                          | ((uint64_t) head[length + 2] << 48)
+                          | ((uint64_t) head[length + 3] << 40)
+                          | ((uint64_t) head[length + 4] << 32)
+                          | ((uint64_t) head[length + 5] << 24)
+                          | ((uint64_t) head[length + 6] << 16)
+                          | ((uint64_t) head[length + 7] << 8)
+                          |             head[length + 8];
+                    length += 9;
                 }
                 else if (minorType == CborBase::TypeIndefinite)
                 {
