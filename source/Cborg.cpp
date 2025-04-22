@@ -1112,8 +1112,8 @@ bool Cborg::getBytes(const uint8_t** pointer, uint32_t* length) const
 
     if (head.getMajorType() == CborBase::TypeBytes)
     {
-        auto offset = head.getLength();
-        auto len = head.getValue();
+        std::size_t offset = head.getLength();
+        std::size_t len = head.getValue();
         if (offset + len > maxLength)
         {
             return false;
@@ -1139,8 +1139,8 @@ bool Cborg::getString(const char** pointer, uint32_t* length) const
 
     if (head.getMajorType() == CborBase::TypeString)
     {
-        auto offset = head.getLength();
-        auto len = head.getValue();
+        std::size_t offset = head.getLength();
+        std::size_t len = head.getValue();
         if (offset + len > maxLength)
         {
             return false;
@@ -1166,8 +1166,8 @@ bool Cborg::getString(std::string& str) const
 
     if (head.getMajorType() == CborBase::TypeString)
     {
-        auto offset = head.getLength();
-        auto length = head.getValue();
+        std::size_t offset = head.getLength();
+        std::size_t length = head.getValue();
         if (offset + length > maxLength)
         {
             return false;
